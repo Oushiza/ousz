@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>僕青 個握 2025/5/10(土) 愛知</title>
+
+<style>
+:root{
+  --hl-1:#1976d2;
+  --hl-2:#64b5f6;
+}
+body{
+  font-family:sans-serif;
+  display:flex;flex-direction:column;align-items:center;
+  margin:16px;
+}
+h1{margin-bottom:16px;font-size:1.25rem;text-align:center}
+
+#grid{
+  border-collapse:collapse;
+  user-select:none;-webkit-user-select:none;
+  max-width:100%;
+  width:100%;
+  table-layout:fixed;
+}
+#grid th,#grid td{
+  width:16.66%;
+  min-width:auto;
+  height:46px;
+  border:1px solid #bbb;
+  text-align:center;
+  vertical-align:middle;
+  padding:4px;
+  font-size:clamp(10px,3.2vw,0.9rem);
+  transition:background-color .15s ease-out;
+  word-break:keep-all;
+}
+#grid th{background:#039be5;color:#fff;font-weight:600}
+
+@media (min-width:660px){
+  #grid th,#grid td{
+    width:110px;
+    font-size:.85rem;
+  }
+}
+
+button{
+  margin-top:20px;padding:10px 18px;font-size:1rem;cursor:pointer
+}
+</style>
+</head>
+<body>
+  <h1>僕青 個握 2025/5/10(土) 愛知</h1>
+
+  <table id="grid">
+    <thead>
+      <tr>
+        <th>1部</th><th>2部</th><th>3部</th><th>4部</th><th>5部</th><th>6部</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td>今井優希</td><td>青木宙帆</td><td>塩釜菜那</td><td>安納蒼衣</td><td>岩本理瑚</td><td>秋田莉杏</td></tr>
+      <tr><td>岩本理瑚</td><td>今井優希</td><td>杉浦英恋</td><td>金澤亜美</td><td>杉浦英恋</td><td>伊藤ゆず</td></tr>
+      <tr><td>金澤亜美</td><td>工藤唯愛</td><td>須永心海</td><td>持永真奈</td><td>萩原心花</td><td>今井優希</td></tr>
+      <tr><td>西森杏弥</td><td>金澤亜美</td><td>萩原心花</td><td>八重樫美伊咲</td><td>早﨑すずき</td><td>木下藍</td></tr>
+      <tr><td>早﨑すずき</td><td>杉浦英恋</td><td>長谷川稀未</td><td>八木仁愛</td><td>山口結杏</td><td>西森杏弥</td></tr>
+      <tr><td>八木仁愛</td><td>須永心海</td><td>早﨑すずき</td><td>柳堀花怜</td><td>吉本此那</td><td>宮腰友里亜</td></tr>
+    </tbody>
+  </table>
+
+  <button id="resetBtn">リセット</button>
+  <button id="saveBtn">画像で保存</button>
+
+<!-- html2canvas -->
+<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+
+<script>
+/* ====== 着色ロジック（変更なし） ====== */
+const COLORS=["white","var(--hl-1)","var(--hl-2)"];
+const STORAGE_KEY="gridStateV4";
+const cells=[...document.querySelectorAll("#grid tbody td")];
+let nameState=JSON.parse(localStorage.getItem(STORAGE_KEY)||"{}");
+
+const getState=n=>nameState[n]??0;
+const saveState=()=>localStorage.setItem(STORAGE_KEY,JSON.stringify(nameState));
+function paint(name){
+  const s=getState(name);
+  const color=COLORS[s];
+  cells.forEach(td=>{
+    if(td.textContent.trim()===name){td.style.backgroundColor=color;}
+  });
+}
+function init(){
+  cells.forEach(td=>td.style.backgroundColor=COLORS[0]);
+  Object.keys(nameState).forEach(paint);
+}
+function onTap(ev){
+  const td=ev.currentTarget;
+  const name=td.textContent.trim();
+  nameState[name]=(getState(name)+1)%COLORS.length;
+  paint(name);saveState();
+}
+cells.forEach(td=>td.addEventListener("pointerdown",onTap,{passive:true}));
+document.getElementById("resetBtn").addEventListener("click",()=>{
+  nameState={};
+  cells.forEach(td=>td.style.backgroundColor=COLORS[0]);
+  saveState();
+});
+init();
+
+/* ====== 画像保存ボタン ====== */
+document.getElementById("saveBtn").addEventListener("click",()=>{
+  html2canvas(document.getElementById("grid"),{scale:2})
+    .then(canvas=>{
+      const link=document.createElement("a");
+      link.download="boku-ao_20250510.png";
+      link.href=canvas.toDataURL("image/png");
+      link.click();
+    });
+});
+</script>
+</body>
+</html>
